@@ -23,6 +23,7 @@ default_form_data = {
 }
 
 app=Flask(__name__)
+app.secret_key = os.urandom(24)
 
 @app.route('/athlete',methods=['GET'])
 def get_athlete_info():
@@ -33,21 +34,18 @@ def get_athlete_info():
 
 @app.route('/uploads',methods=['POST'])
 def forward_ride_upload():
-    if 'file' not in request.files:
-        flash('No file part')
-        return "NO FILE"
-    file = request.files['file']
-
-    if file.filename == '':
-        flash('No selected file')
-        return "nosELECTEDFIDS"
+    print(request.headers)
+    print(request.data)
 
     form_data = default_form_data.copy()
-    form_data['file'] = file.read().decode('utf-8')
+    form_data['file'] = request.data.decode('utf-8')
 
     res = requests.post(
         BASE_API_URL+"/uploads",
         headers=headers,
         files=form_data
     )
-    return str(res.status_code)+'\n'+res.text
+
+    ret = str(res.status_code)+'\n'+res.text
+    print(ret)
+    return ret
