@@ -16,6 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from support_server.views import *
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin', admin.site.urls),
+    url(r'^athlete', get_athlete_info),
+    url(r'^uploads', forward_ride_upload),
 ]
