@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-from dotenv import load_dotenv
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -25,7 +24,11 @@ SECRET_KEY = 'q_#4&ix*+3(g^u#*)b60tszu@(4jq(w5@0_xk1!drg^oqm#wf6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.87']
+ALLOWED_HOSTS = [
+    '192.168.0.87',
+    '127.0.0.1',
+    'localhost'
+]
 
 
 # Application definition
@@ -121,4 +124,9 @@ STATIC_URL = '/static/'
 
 APPEND_SLASH=False
 
-load_dotenv()
+import socket
+
+try:
+    HOSTNAME = socket.gethostname()
+except:
+    HOSTNAME = 'localhost'

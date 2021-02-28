@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 import os
 import requests
+
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -23,7 +24,7 @@ default_form_data = {
     'file':None
 }
 
-def get_athlete_info(request):
+def get_athlete_info(req):
     res = requests.get(BASE_API_URL+"/athlete",headers=headers)
     return HttpResponse(res.text)
 
@@ -42,4 +43,10 @@ def forward_ride_upload(request):
     ret = str(res.status_code)+'\n'+res.text
     print(ret)
     return HttpResponse(ret)
+
+
+def redirect_strava_oauth(req):
+    return HttpResponsePermanentRedirect(
+        'https://www.strava.com/oauth/authorize?client_id=57956&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=activity:write'
+    )
 
