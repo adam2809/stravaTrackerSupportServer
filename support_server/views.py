@@ -1,7 +1,8 @@
-from flask import Flask,request,flash
+from django.http import HttpResponse
 import os
 import requests
-from stravaio import strava_oauth2
+from django.views.decorators.csrf import csrf_exempt
+
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
@@ -22,23 +23,15 @@ default_form_data = {
     'file':None
 }
 
-app=Flask(__name__)
-app.secret_key = os.urandom(24)
-
-@app.route('/athlete',methods=['GET'])
-def get_athlete_info():
-    print(ACCESS_TOKEN)
+def get_athlete_info(request):
     res = requests.get(BASE_API_URL+"/athlete",headers=headers)
-    return res.text
+    return HttpResponse(res.text)
 
 
-@app.route('/uploads',methods=['POST'])
-def forward_ride_upload():
-    print(request.headers)
-    print(request.data)
-
+@csrf_exempt
+def forward_ride_upload(request):
     form_data = default_form_data.copy()
-    form_data['file'] = request.data.decode('utf-8')
+    form_data['file'] = request.body.decode('utf-8')
 
     res = requests.post(
         BASE_API_URL+"/uploads",
@@ -48,4 +41,5 @@ def forward_ride_upload():
 
     ret = str(res.status_code)+'\n'+res.text
     print(ret)
-    return ret
+    return HttpResponse(ret)
+
