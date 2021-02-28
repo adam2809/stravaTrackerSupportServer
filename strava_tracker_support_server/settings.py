@@ -126,7 +126,3 @@ APPEND_SLASH=False
 
 import socket
 
-try:
-    HOSTNAME = socket.gethostname()
-except:
-    HOSTNAME = 'localhost'
