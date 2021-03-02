@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^login', RedirectView.as_view(url='https://www.strava.com/oauth/authorize?'
         'client_id=57956&'
         'response_type=code&' 
-        f'redirect_uri=http://localhost:8000/exhange_token&'
+        f'redirect_uri=http://localhost:8000/exchange_token&'
         'approval_prompt=force&'
         'scope=activity:write'
     )),

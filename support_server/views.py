@@ -3,6 +3,7 @@ import os
 import requests
 
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 
 CLIENT_ID = os.getenv('CLIENT_ID')
@@ -44,7 +45,27 @@ def forward_ride_upload(request):
     print(ret)
     return HttpResponse(ret)
 
-
+@require_http_methods(["GET"])
 def exchange_token(req):
-    print(req.method)
+    if(req.GET['scope'].find('activity:write') == -1):
+        return HttpResponse('Scope activity:write is required')
+
+    print(req.GET)
+    res = requests.post(BASE_API_URL + '/oauth/token',
+        {
+            'client_id':CLIENT_ID ,
+            'client_secret':CLIENT_SECRET ,
+            'code':req.GET['code'],
+            'grant_type':'authorization_code'
+        }
+    )
+    print(res.json())
+
+    return HttpResponse("csadasdasdsads")
+
+    
+    
+
+    
+
 
