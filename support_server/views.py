@@ -69,12 +69,15 @@ def exchange_token(req):
     print(f'Successful token exhange with response: {res_json}')
 
     if(User.objects.filter(esp_code=auth_code[:8]).exists()):
-        return HttpResponse(content='User with this esp code already exists. Try Again.',status=400)
+        return HttpResponse(content='Esp code generation error. Try Again.',status=400)
+
+    User.objects.filter(strava_id=res_json['athlete']['id']).delete()
 
     new_user = User.objects.create(
         refresh_token=res_json['refresh_token'],
         access_token=res_json['access_token'],
-        esp_code=auth_code[:8]
+        esp_code=auth_code[:8],
+        strava_id=res_json['athlete']['id']
     )
     new_user.save()
     print(f'Saved new user {new_user}')
