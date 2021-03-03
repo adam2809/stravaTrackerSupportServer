@@ -12,10 +12,6 @@ CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 BASE_API_URL="https://www.strava.com/api/v3"
 
-auth_code_to_user_id_dict = {
-
-}
-
 headers = {
     'Authorization': 'Bearer ' + ACCESS_TOKEN
 }
@@ -72,17 +68,18 @@ def exchange_token(req):
     res_json = res.json()
     print(f'Successful token exhange with response: {res_json}')
 
+    if(User.objects.filter(esp_code=auth_code[:8]).exists()):
+        return HttpResponse(content='User with this esp code already exists. Try Again.',status=400)
+
     new_user = User.objects.create(
         refresh_token=res_json['refresh_token'],
-        access_token=res_json['access_token']
+        access_token=res_json['access_token'],
+        esp_code=auth_code[:8]
     )
     new_user.save()
     print(f'Saved new user {new_user}')
 
-    auth_code_to_user_id_dict[auth_code] = new_user.id
-    print(f'Assigned auth code {auth_code} to new user id {new_user.id}')
-
-    return HttpResponse('Wpisz kod z esp')
+    return HttpResponse(auth_code[:8])
 
     
     
