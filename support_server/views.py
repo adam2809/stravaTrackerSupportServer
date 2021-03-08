@@ -4,13 +4,14 @@ import requests
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from support_server.models import User
 
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 BASE_API_URL="https://www.strava.com/api/v3"
+
+esp_code_to_tokens_mapping = {}
 
 headers = {
     'Authorization': 'Bearer ' + ACCESS_TOKEN
@@ -67,22 +68,16 @@ def exchange_token(req):
     
     res_json = res.json()
     print(f'Successful token exhange with response: {res_json}')
+    esp_code = auth_code[:8]
+    print(f'New esp code is: {esp_code}')
 
-    if(User.objects.filter(esp_code=auth_code[:8]).exists()):
-        return HttpResponse(content='Esp code generation error. Try Again.',status=400)
+    # TODO if the same user authorizes again the previous esp_code entry should be deleted
+    esp_code_to_tokens_mapping[esp_code] = {
+        'refresh_token':res_json['refresh_token'],
+        'access_token':res_json['access_token']
+    }
 
-    User.objects.filter(strava_id=res_json['athlete']['id']).delete()
-
-    new_user = User.objects.create(
-        refresh_token=res_json['refresh_token'],
-        access_token=res_json['access_token'],
-        esp_code=auth_code[:8],
-        strava_id=res_json['athlete']['id']
-    )
-    new_user.save()
-    print(f'Saved new user {new_user}')
-
-    return HttpResponse(auth_code[:8])
+    return HttpResponse(esp_code)
 
     
     
