@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 import os
 import requests
 
@@ -78,6 +78,16 @@ def exchange_token(req):
     }
 
     return HttpResponse(esp_code)
+
+@csrf_exempt
+def get_tokens_for_esp_code(req):
+    esp_code = req.GET['esp_code']
+    print(f"Current mapping: {esp_code_to_tokens_mapping}")
+
+    if(esp_code not in esp_code_to_tokens_mapping):
+        return HttpResponse("Invalid esp code","text/plain",400)    
+    
+    return JsonResponse(esp_code_to_tokens_mapping.pop(esp_code))
 
     
     
